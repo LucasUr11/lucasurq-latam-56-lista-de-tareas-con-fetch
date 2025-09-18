@@ -9,3 +9,15 @@
     import 'relative/path/to/stylesheet.scss';
 
 */
+
+.btn {
+    color: white;
+}
+
+.btn:hover {
+    color: red;
+}
+
+input {
+    outline: none;
+}
