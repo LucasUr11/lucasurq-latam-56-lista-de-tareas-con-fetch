@@ -11,11 +11,12 @@
 */
 
 .btn {
-    color: white;
+    color: red;
+    display: none;
 }
 
-.btn:hover {
-    color: red;
+li:hover .btn {
+    display: inline-block;
 }
 
 input {

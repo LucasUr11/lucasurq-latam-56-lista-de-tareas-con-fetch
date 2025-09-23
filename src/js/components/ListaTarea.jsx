@@ -38,7 +38,6 @@ export function ListaTarea() {
                                         {item}
                                         <button
                                             type="button"
-                                            style={{ border: "none" }}
                                             className="btn"
                                             onClick={() => {
                                                 setLista(
