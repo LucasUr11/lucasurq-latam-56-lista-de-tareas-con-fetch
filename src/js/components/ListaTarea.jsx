@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export function ListaTarea() {
 
@@ -7,7 +7,15 @@ export function ListaTarea() {
 
     const obtenerData = async () => {
         try {
-            const resGET = await fetch('https://playground.4geeks.com/todo/users/lucas01'); // pido la tarea (data) a la API.-
+            let resGET = await fetch('https://playground.4geeks.com/todo/users/lucas01'); // pido la tarea (data) a la API.-
+
+            if (resGET.status === 404) {
+                const createRes = await fetch(`https://playground.4geeks.com/todo/users/lucas01`, {
+                    method: 'POST'
+                });
+
+                resGET = await fetch(`https://playground.4geeks.com/todo/users/lucas01`)
+            }
             if (!resGET.ok) { // Confirmo que el resolve no tiene problemas.-
                 throw new Error("Se ha detectado un error.");
             }
@@ -61,6 +69,30 @@ export function ListaTarea() {
         }
     }
 
+    const eliminarTodasLasTareas = async () => {
+        try {
+            if (tareas.length === 0) {
+                alert("No hay tareas para eliminar.");
+                return;
+            }
+
+            await Promise.all( // Recibe un array de promesas y devuelve una sola promesa.-
+                tareas.map(tarea =>
+                    fetch(`https://playground.4geeks.com/todo/todos/${tarea.id}`, {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json" }
+                    })
+                )
+            ); // Con el 'await' esperamos a que se ejecuten todas las peticiones 'DELETE' y se muestre la lista vacia.-
+
+            setTareas([]);
+
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+
     useEffect(() => { // Sincronizo la obtencion de datos para mostrarlos.-
         obtenerData();
     }, []);
@@ -76,6 +108,7 @@ export function ListaTarea() {
                         type="text"
                         className="w-100 list-group-item px-5 text-body-tertiary"
                         placeholder="What needs to be done?"
+
                         value={inputValue}
                         onChange={e => setInputValue(e.target.value)}
                         onKeyDown={e => {
@@ -83,7 +116,7 @@ export function ListaTarea() {
                                 if (inputValue.trim() === "") {
                                     return alert("No se puede agregar un valor vacio.");
                                 }
-                                crearData(inputValue)
+                                crearData(inputValue) // Ejecuto la funcion y le paso el valor del input.-
                                 setInputValue("");
                             }
                         }}
@@ -111,6 +144,12 @@ export function ListaTarea() {
                 </ul>
             </div>
             <p className="d-flex align-items-start fs-6 text-body-tertiary">{tareas.length} item left</p>
+            <button
+                className="btn btn-danger w-100 mt-2"
+                onClick={eliminarTodasLasTareas}
+            >
+                Eliminar tareas
+            </button>
         </div >
     );
 }
